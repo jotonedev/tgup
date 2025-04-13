@@ -51,7 +51,7 @@ async def upload_file(
         thumb=thumbnail,
         supports_streaming=is_video_mp4(file_path),
         progress_callback=pg.update_to,
-        file_size=file_size
+        file_size=file_size,
     )
     # Stop progress bar
     pg.close()

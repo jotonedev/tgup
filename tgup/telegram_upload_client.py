@@ -280,7 +280,9 @@ class TelegramUploadClient(TelegramClient):
             self.upload_semaphore.release()
         if result is None and retry < MAX_RECONNECT_RETRIES:
             # An error occurred, retry
-            log.warning(f"Error uploading file part {part_index + 1}/{part_count}. Retrying...")
+            log.warning(
+                f"Error uploading file part {part_index + 1}/{part_count}. Retrying..."
+            )
             await asyncio.sleep(max(MIN_RECONNECT_WAIT, retry * MIN_RECONNECT_WAIT))
             await self.reconnect()
             await self._send_file_part(
@@ -295,7 +297,7 @@ class TelegramUploadClient(TelegramClient):
         elif result:
             self._log[__name__].debug("Uploaded %d/%d", part_index + 1, part_count)
             if progress_callback:
-                await asyncio.to_thread(progress_callback,pos, file_size)
+                await asyncio.to_thread(progress_callback, pos, file_size)
         else:
             raise RuntimeError("Failed to upload file part {}.".format(part_index))
 
