@@ -10,13 +10,13 @@ license = { text = "GPL-3.0-or-later" }
 readme = "README.md"
 keywords = ["telegram-upload", "telethon", "telegram", "upload"]
 classifiers = [
+    "Topic :: Multimedia",
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Typing :: Typed",
 ]
 
 dependencies = [
