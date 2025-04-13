@@ -232,7 +232,7 @@ class TelegramUploadClient(TelegramClient):
                 [
                     task
                     for task in asyncio.all_tasks()
-                    if task.get_name().startswith(f"telegram-upload-file-")
+                    if task.get_name().startswith("telegram-upload-file-")
                 ]
             )
         if is_big:
@@ -270,12 +270,12 @@ class TelegramUploadClient(TelegramClient):
         except InvalidBufferError as e:
             if e.code == 429:
                 # Too many connections
-                log.warning(f"Too many connections to Telegram servers.", exc_info=True)
+                log.warning("Too many connections to Telegram servers.", exc_info=True)
             else:
                 raise
         except ConnectionError:
             # Retry to send the file part
-            log.debug(f"Detected connection error. Retrying...", exc_info=True)
+            log.debug("Detected connection error. Retrying...", exc_info=True)
         else:
             self.upload_semaphore.release()
         if result is None and retry < MAX_RECONNECT_RETRIES:
@@ -323,9 +323,9 @@ class TelegramUploadClient(TelegramClient):
             return
         self.decrease_upload_semaphore()
         try:
-            log.info(f"Reconnecting to Telegram servers...")
+            log.info("Reconnecting to Telegram servers...")
             await asyncio.wait_for(self.connect(), RECONNECT_TIMEOUT)
-            log.info(f"Reconnected to Telegram servers.")
+            log.info("Reconnected to Telegram servers.")
         except InvalidBufferError as e:
             log.error(
                 "InvalidBufferError connecting to Telegram servers.",
@@ -334,7 +334,7 @@ class TelegramUploadClient(TelegramClient):
             )
         except asyncio.TimeoutError as e:
             log.error(
-                f"Timeout connecting to Telegram servers.", exc_info=e, stack_info=True
+                "Timeout connecting to Telegram servers.", exc_info=e, stack_info=True
             )
         finally:
             self.reconnecting_lock.release()

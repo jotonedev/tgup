@@ -83,7 +83,7 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
         await ffmpeg.execute()
     except FFmpegError as e:
         log.warning(
-            f"Video does not contain an attached picture (thumbnail), generating one."
+            "Video does not contain an attached picture (thumbnail), generating one."
         )
         log.debug(f"FFMPEG error: {e.message}")
         log.debug(f"Arguments to execute ffmpeg: {' '.join(e.arguments)}")

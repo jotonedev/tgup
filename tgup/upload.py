@@ -5,7 +5,6 @@ from pathlib import Path
 
 from telethon import TelegramClient
 from telethon.hints import EntityLike
-from telethon.tl.types import InputFileBig
 
 from tgup.client import TgupClient
 from tgup.progress_bar import DownloadProgressBar

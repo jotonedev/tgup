@@ -2,7 +2,6 @@ import json
 from getpass import getpass
 from pathlib import Path
 
-from telethon import TelegramClient
 
 from .config import SESSION_FILE, CONFIG_FILE
 from .telegram_upload_client import TelegramUploadClient
