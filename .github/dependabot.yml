@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "pip" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    reviewers:
+      - "jotonedev"
+    groups:
+      dependencies:
+        patterns:
+          - "*"  # Group all updates together
+    schedule:
+      interval: "weekly" # How often to check for updates
+    commit-message:
+      prefix: "[python] "
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    reviewers:
+      - "jotonedev"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[action] "
