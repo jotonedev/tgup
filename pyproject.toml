@@ -1,12 +1,14 @@
 [project]
 name = "tgup"
-version = "0.1.0"
+version = "0.1.1"
 description = "Upload files to Telegram using your account"
 requires-python = ">=3.11"
 authors = [
     {name = "John Toniutti", email = "john.toniutti@gmail.com"}
 ]
 license = { text = "GPL-3.0-or-later" }
+readme = "README.md"
+keywords = ["telegram-upload", "telethon", "telegram", "upload"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",

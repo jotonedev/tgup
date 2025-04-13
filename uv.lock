@@ -178,7 +178,7 @@ wheels = [
 
 [[package]]
 name = "tgup"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "cryptg" },
