@@ -54,7 +54,8 @@ class TgupClient(TelegramUploadClient):
         last_name="",
         max_attempts=3,
     ):
-        return self.start(
+        # noinspection PyUnresolvedReferences
+        return await self.start(
             phone=input_phone,
             password=input_password,
             bot_token=bot_token,
