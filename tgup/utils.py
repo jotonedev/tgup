@@ -30,11 +30,12 @@ def list_files(directory: Path, *, recursively: bool = False) -> set[Path]:
     """
     if not isinstance(directory, Path):
         directory = Path(directory)
+    directory = directory.resolve()
 
     if not directory.exists():
         raise FileNotFoundError(f"Directory {directory} does not exist.")
-    if not directory.is_dir():
-        raise NotADirectoryError(f"{directory} is not a directory.")
+    if directory.is_file():
+        return {directory}
 
     files = set()
     if recursively:

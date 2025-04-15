@@ -1,6 +1,6 @@
 [project]
 name = "tgup"
-version = "0.1.1"
+version = "0.1.2"
 description = "Upload files to Telegram using your account"
 requires-python = ">=3.11"
 authors = [

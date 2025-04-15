@@ -54,7 +54,7 @@ class TgupClient(TelegramUploadClient):
         last_name="",
         max_attempts=3,
     ):
-        return await self.start(
+        return self.start(
             phone=input_phone,
             password=input_password,
             bot_token=bot_token,
