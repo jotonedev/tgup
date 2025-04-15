@@ -58,9 +58,6 @@ jobs:
     name: Publish
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/aiogram/${{ steps.package-version.outputs.value }}/
 
     permissions:
       id-token: write
