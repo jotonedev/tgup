@@ -6,7 +6,7 @@ requires-python = ">=3.11"
 authors = [
     {name = "John Toniutti", email = "john.toniutti@gmail.com"}
 ]
-license = { text = "GPL-3.0-or-later" }
+license = "GPL-3.0-or-later"
 readme = "README.md"
 keywords = ["telegram-upload", "telethon", "telegram", "upload"]
 classifiers = [
