@@ -41,3 +41,7 @@ To see all the options, run: `tgup --help`
 ## Acknowledgements
 
 - Based on [telegram-upload](https://github.com/Nekmo/telegram-upload)
+
+## License
+
+This project is released under the [GPL 3.0 or later](LICENSE) license.
