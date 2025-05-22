@@ -86,13 +86,17 @@ async def run(
     for node in nodes:
         files = list_files(node, recursively=recursively)
         for file in files:
-            await upload_file(
-                file,
-                client,
-                to_chat,
-                thumbnail=thumbnail,
-                no_thumbnail=no_thumbnail,
-            )
+            try:
+                await upload_file(
+                    file,
+                    client,
+                    to_chat,
+                    thumbnail=thumbnail,
+                    no_thumbnail=no_thumbnail,
+                )
+            except ValueError as e:
+                log.error(str(e))
+                continue
 
 
 def main():
