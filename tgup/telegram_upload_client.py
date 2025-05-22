@@ -12,6 +12,7 @@ import asyncio
 import hashlib
 import logging
 import os
+from functools import lru_cache
 from os import cpu_count
 from typing import Optional, Final
 
@@ -39,6 +40,27 @@ class TelegramUploadClient(TelegramClient):
         self.reconnecting_lock = asyncio.Lock()
         self.upload_semaphore = asyncio.Semaphore(self.parallel_upload_blocks)
         super().__init__(*args, **kwargs)
+
+    @lru_cache
+    async def get_maximum_file_size(self) -> int:
+        """
+        Get the maximum file size allowed by Telegram servers.
+        Returns:
+            the number of bytes as integer.
+        """
+        if await self.is_bot():
+            # 50 megabytes
+            return 50 * 1024 * 1024
+        else:
+            user = await self.get_me()
+            is_premium = getattr(user, "premium", False)
+
+            if is_premium:
+                # 4 gigabytes
+                return 4 * 1024 * 1024 * 1024
+            else:
+                # 2 gigabytes
+                return 2 * 1024 * 1024 * 1024
 
     async def upload_file(
         self: "TelegramClient",
@@ -167,6 +189,15 @@ class TelegramUploadClient(TelegramClient):
             hash_md5 = hashlib.md5()
 
             part_count = (file_size + part_size - 1) // part_size
+
+            # Check the maximum allowed file size
+            max_file_size = await self.get_maximum_file_size()
+            if file_size > max_file_size:
+                raise ValueError(
+                    f"File too big for the current Telegram account. "
+                    f"Maximum allowed size: {max_file_size / 1024 / 1024}MB"
+                )
+
             self._log[__name__].info(
                 "Uploading file of %d bytes in %d chunks of %d",
                 file_size,
@@ -272,6 +303,8 @@ class TelegramUploadClient(TelegramClient):
                 # Too many connections
                 log.warning("Too many connections to Telegram servers.", exc_info=True)
             else:
+                # 2 gigabytes for regular users
+                return 2 * 1024 * 1024 * 1024
                 raise
         except ConnectionError:
             # Retry to send the file part
