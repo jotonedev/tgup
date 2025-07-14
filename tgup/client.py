@@ -34,10 +34,24 @@ def input_password():
 
 class TgupClient(TelegramUploadClient):
     def __init__(self, config_file: Path = CONFIG_FILE, proxy=None, **kwargs):
-        with open(config_file) as f:
-            config = json.load(f)
+        if isinstance(config_file, Path):
+            config_file = config_file.resolve()
+        else:
+            raise TypeError("config_file must be a Path object.")
+
+        if not config_file.exists():
+            api_id, api_hash = self.setup_interactive()
+            config = {
+                'api_id': api_id,
+                'api_hash': api_hash,
+            }
+            config_file.write_text(json.dumps(config))
+        else:
+            with open(config_file) as f:
+                config = json.load(f)
 
         self._config_file = config_file
+        # noinspection PyUnboundLocalVariable
         super().__init__(
             config.get("session", SESSION_FILE),
             config["api_id"],
@@ -45,6 +59,13 @@ class TgupClient(TelegramUploadClient):
             proxy=proxy,
             **kwargs,
         )
+
+    @staticmethod
+    def setup_interactive() -> tuple[str, str]:
+        """Ask for information from https://my.telegram.org"""
+        api_id = input("Enter API ID: ")
+        api_hash = input("Enter API hash: ")
+        return api_id, api_hash
 
     async def login_interactive(
         self,
