@@ -42,8 +42,8 @@ class TgupClient(TelegramUploadClient):
         if not config_file.exists():
             api_id, api_hash = self.setup_interactive()
             config = {
-                'api_id': api_id,
-                'api_hash': api_hash,
+                "api_id": api_id,
+                "api_hash": api_hash,
             }
             config_file.write_text(json.dumps(config))
         else:
