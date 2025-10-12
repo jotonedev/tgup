@@ -40,6 +40,7 @@ class TgupClient(TelegramUploadClient):
             raise TypeError("config_file must be a Path object.")
 
         if not config_file.exists():
+            config_file.parent.mkdir(exist_ok=True)
             api_id, api_hash = self.setup_interactive()
             config = {
                 "api_id": api_id,
