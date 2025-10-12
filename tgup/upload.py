@@ -28,7 +28,11 @@ async def upload_file(
     # Parse thumbnail options
     if is_video_type(file_path):
         if not no_thumbnail and thumbnail is None:
-            thumbnail = await extract_thumbnail(file_path)
+            try:
+                thumbnail = await extract_thumbnail(file_path)
+            except FileNotFoundError:
+                log.warning("ffmpeg not found. Skipping thumbnail extraction.")
+                thumbnail = None
         elif no_thumbnail:
             thumbnail = None
     else:
