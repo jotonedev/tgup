@@ -41,7 +41,6 @@ class TelegramUploadClient(TelegramClient):
         self.upload_semaphore = asyncio.Semaphore(self.parallel_upload_blocks)
         super().__init__(*args, **kwargs)
 
-    @lru_cache
     async def get_maximum_file_size(self) -> int:
         """
         Get the maximum file size allowed by Telegram servers.
