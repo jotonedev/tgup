@@ -47,7 +47,7 @@ jobs:
           subject-path: "dist/*"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release-dists
           retention-days: 1
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: release-dists
           path: dist
