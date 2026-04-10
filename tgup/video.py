@@ -1,3 +1,4 @@
+import sys
 import logging
 import mimetypes
 import tempfile
@@ -14,7 +15,11 @@ log = logging.getLogger(__name__)
 
 @lru_cache
 def get_mime_type(file_path: Path) -> str:
-    return mimetypes.guess_file_type(file_path)[0]
+    if sys.version_info >= (3, 13):
+        return mimetypes.guess_file_type(file_path)[0] or ""
+    
+    return mimetypes.guess_type(file_path)[0] or ""
+    
 
 
 def is_video_type(file_path: Path) -> bool:
@@ -28,7 +33,7 @@ def is_video_type(file_path: Path) -> bool:
         True if the file is a video, False otherwise.
     """
     # Get the mime type based on the file extension
-    mime_type = get_mime_type(file_path)
+    mime_type = get_mime_type(file_path.resolve())
 
     # Check if mime_type is not None and starts with 'video/'
     return mime_type is not None and mime_type.startswith("video/")
