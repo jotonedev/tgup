@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Test
+name: Run tests
 
 on:
   workflow_dispatch:
@@ -15,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.13" ]
+        python-version: [ "3.14", "3.13", "3.12", "3.11" ]
 
     permissions:
       contents: read
@@ -33,10 +30,8 @@ jobs:
           cache-dependency-glob: "uv.lock"
           version: "latest"
 
-      - name: Lint with ruff
-        id: lint
-        run: uv run ruff check -v
+      - name: Run tests with pytest
+        id: test
+        run: uv run pytest -v
 
-      - name: Check formatting with ruff
-        id: check
-        run: uv run ruff format --check
+      
