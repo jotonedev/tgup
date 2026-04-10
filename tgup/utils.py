@@ -1,7 +1,7 @@
 import logging
 import re
-from pathlib import Path
 from os import cpu_count
+from pathlib import Path
 
 __all__ = ["list_files", "phone_match", "setup_logging", "cpu_count"]
 

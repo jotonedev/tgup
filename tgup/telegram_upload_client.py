@@ -12,14 +12,13 @@ import asyncio
 import hashlib
 import logging
 import os
-from functools import lru_cache
 from os import cpu_count
-from typing import Optional, Final
+from typing import Final, Optional
 
-from telethon import TelegramClient, utils, helpers, custom, hints
+from telethon import TelegramClient, custom, helpers, hints, utils
 from telethon.crypto import AES
 from telethon.errors import InvalidBufferError
-from telethon.tl import types, functions, TLRequest
+from telethon.tl import TLRequest, functions, types
 
 __all__ = ["TelegramUploadClient"]
 
@@ -188,7 +187,7 @@ class TelegramUploadClient(TelegramClient):
             hash_md5 = hashlib.md5()
 
             part_count = (file_size + part_size - 1) // part_size
-            
+
             # Check the maximum allowed file size
             max_file_size = await self.get_maximum_file_size()
             if file_size > max_file_size:
@@ -243,9 +242,7 @@ class TelegramUploadClient(TelegramClient):
                         file_id, part_index, part_count, part
                     )
                 else:
-                    request = functions.upload.SaveFilePartRequest(
-                        file_id, part_index, part
-                    )
+                    request = functions.upload.SaveFilePartRequest(file_id, part_index, part)
                 await self.upload_semaphore.acquire()
                 task = self.loop.create_task(
                     self._send_file_part_task(
@@ -304,7 +301,7 @@ class TelegramUploadClient(TelegramClient):
         try:
             result = await self(request)
         except InvalidBufferError as e:
-            if getattr(e, 'code', None) == 429:
+            if getattr(e, "code", None) == 429:
                 # Too many connections
                 log.warning("Too many connections to Telegram servers.", exc_info=True)
             else:
@@ -314,9 +311,7 @@ class TelegramUploadClient(TelegramClient):
             log.debug("Detected connection error. Retrying...", exc_info=True)
         if result is None and retry < MAX_RECONNECT_RETRIES:
             # An error occurred, retry
-            log.warning(
-                f"Error uploading file part {part_index + 1}/{part_count}. Retrying..."
-            )
+            log.warning(f"Error uploading file part {part_index + 1}/{part_count}. Retrying...")
             await asyncio.sleep(max(MIN_RECONNECT_WAIT, retry * MIN_RECONNECT_WAIT))
             await self.reconnect()
             await self._send_file_part(
@@ -367,8 +362,6 @@ class TelegramUploadClient(TelegramClient):
                 stack_info=True,
             )
         except asyncio.TimeoutError as e:
-            log.error(
-                "Timeout connecting to Telegram servers.", exc_info=e, stack_info=True
-            )
+            log.error("Timeout connecting to Telegram servers.", exc_info=e, stack_info=True)
         finally:
             self.reconnecting_lock.release()

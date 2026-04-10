@@ -2,8 +2,7 @@ import json
 from getpass import getpass
 from pathlib import Path
 
-
-from .config import SESSION_FILE, CONFIG_FILE
+from .config import CONFIG_FILE, SESSION_FILE
 from .telegram_upload_client import TelegramUploadClient
 from .utils import phone_match
 

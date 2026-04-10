@@ -9,8 +9,7 @@ from telethon.hints import EntityLike
 from tgup.client import TgupClient
 from tgup.progress_bar import DownloadProgressBar
 from tgup.utils import list_files, setup_logging
-from tgup.video import extract_thumbnail, is_video_type, is_video_mp4
-
+from tgup.video import extract_thumbnail, is_video_mp4, is_video_type
 
 __all__ = ["upload_file", "run", "main"]
 
@@ -89,7 +88,7 @@ async def run(
         entity = int(to)
     except ValueError:
         entity = to
-    
+
     try:
         to_chat = await client.get_input_entity(entity)
     except ValueError:

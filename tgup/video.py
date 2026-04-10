@@ -1,6 +1,6 @@
-import sys
 import logging
 import mimetypes
+import sys
 import tempfile
 from functools import lru_cache
 from pathlib import Path
@@ -17,9 +17,8 @@ log = logging.getLogger(__name__)
 def get_mime_type(file_path: Path) -> str:
     if sys.version_info >= (3, 13):
         return mimetypes.guess_file_type(file_path)[0] or ""
-    
+
     return mimetypes.guess_type(file_path)[0] or ""
-    
 
 
 def is_video_type(file_path: Path) -> bool:
@@ -87,9 +86,7 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
         log.debug(f"Extracting thumbnail from {video_path}")
         await ffmpeg.execute()
     except FFmpegError as e:
-        log.warning(
-            "Video does not contain an attached picture (thumbnail), generating one."
-        )
+        log.warning("Video does not contain an attached picture (thumbnail), generating one.")
         log.debug(f"FFMPEG error: {e.message}")
         log.debug(f"Arguments to execute ffmpeg: {' '.join(e.arguments)}")
     else:
@@ -109,9 +106,7 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
         log.debug(f"Creating thumbnail from {video_path}")
         await ffmpeg.execute()
     except FFmpegError as e:
-        log.exception(
-            f"Unable to create thumbnail from {video_path}", exc_info=e, stack_info=True
-        )
+        log.exception(f"Unable to create thumbnail from {video_path}", exc_info=e, stack_info=True)
         log.debug(f"FFMPEG error: {e.message}")
         log.debug(f"Arguments to execute ffmpeg: {' '.join(e.arguments)}")
         return None
