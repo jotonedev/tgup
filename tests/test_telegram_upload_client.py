@@ -18,17 +18,15 @@ async def mock_client():
         
         # Manually initialize attributes expected from TelegramUploadClient or TelegramClient
         client._log = MagicMock()
+        client._sender = MagicMock()
         
         # Mock TelegramClient methods
         client.is_bot = AsyncMock()
         client.get_me = AsyncMock()
         client.connect = AsyncMock()
         client.is_connected = MagicMock(return_value=False)
-        
-        # Mock the __call__ method for sending API requests
-        client_call = AsyncMock()
-        client.__call__ = client_call
-        client.client_call_mock = client_call # Reference to check calls
+        client._call = AsyncMock()
+        client.client_call_mock = client._call # Reference to check calls
         
         return client
 
@@ -93,9 +91,11 @@ async def test_upload_file_already_uploaded(mock_client):
 @pytest.mark.asyncio
 async def test_upload_file_invalid_part_size(mock_client):
     with patch("telethon.helpers._FileStream") as MockStream:
-        mock_stream_context = AsyncMock()
+        mock_stream_context = MagicMock()
         mock_stream_context.file_size = 1000
-        MockStream.return_value.__aenter__.return_value = mock_stream_context
+        mock_stream_context.name = "dummy.txt"
+        MockStream.return_value.__aenter__ = AsyncMock(return_value=mock_stream_context)
+        MockStream.return_value.__aexit__ = AsyncMock(return_value=None)
         
         with pytest.raises(ValueError, match="part size must be less or equal to 512KB"):
             await mock_client.upload_file("dummy.txt", part_size_kb=1024)
@@ -107,9 +107,11 @@ async def test_upload_file_invalid_part_size(mock_client):
 async def test_upload_file_too_big(mock_client):
     mock_client.get_maximum_file_size = AsyncMock(return_value=10 * 1024 * 1024)
     with patch("telethon.helpers._FileStream") as MockStream:
-        mock_stream_context = AsyncMock()
+        mock_stream_context = MagicMock()
         mock_stream_context.file_size = 20 * 1024 * 1024 # 20MB
-        MockStream.return_value.__aenter__.return_value = mock_stream_context
+        mock_stream_context.name = "dummy.txt"
+        MockStream.return_value.__aenter__ = AsyncMock(return_value=mock_stream_context)
+        MockStream.return_value.__aexit__ = AsyncMock(return_value=None)
         
         with pytest.raises(ValueError, match="File too big"):
             await mock_client.upload_file("dummy.txt", part_size_kb=512)
@@ -123,7 +125,7 @@ async def test_send_file_part_success(mock_client):
     
     await mock_client._send_file_part(request, part_index=0, part_count=2, pos=1024, file_size=2048, progress_callback=progress_callback)
     
-    mock_client.client_call_mock.assert_called_once_with(request)
+    mock_client.client_call_mock.assert_called_once_with(mock_client._sender, request, ordered=False)
     # the callback runs in another thread, we can't easily wait for it unless we hook into it
     # asyncio.to_thread makes it slightly tricky, but it should be called
 
