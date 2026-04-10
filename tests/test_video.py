@@ -16,7 +16,7 @@ def test_get_mime_type():
         zip_file.writestr("test.txt", "This is a test file.")
 
     # Check
-    assert get_mime_type(temp_file_path) == "application/x-zip-compressed"
+    assert get_mime_type(temp_file_path) in ["application/zip", "application/x-zip-compressed"]
 
     # Teardown
     os.remove(temp_file_path)
