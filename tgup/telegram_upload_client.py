@@ -188,7 +188,7 @@ class TelegramUploadClient(TelegramClient):
             hash_md5 = hashlib.md5()
 
             part_count = (file_size + part_size - 1) // part_size
-
+            
             # Check the maximum allowed file size
             max_file_size = await self.get_maximum_file_size()
             if file_size > max_file_size:
@@ -205,6 +205,7 @@ class TelegramUploadClient(TelegramClient):
             )
 
             pos = 0
+            tasks = []
             for part_index in range(part_count):
                 # Read the file by in chunks of size part_size
                 part = await helpers._maybe_await(stream.read(part_size))
@@ -246,8 +247,8 @@ class TelegramUploadClient(TelegramClient):
                         file_id, part_index, part
                     )
                 await self.upload_semaphore.acquire()
-                self.loop.create_task(
-                    self._send_file_part(
+                task = self.loop.create_task(
+                    self._send_file_part_task(
                         request,
                         part_index,
                         part_count,
@@ -257,20 +258,25 @@ class TelegramUploadClient(TelegramClient):
                     ),
                     name=f"telegram-upload-file-{part_index}",
                 )
+                tasks.append(task)
             # Wait for all tasks to finish
-            await asyncio.wait(
-                [
-                    task
-                    for task in asyncio.all_tasks()
-                    if task.get_name().startswith("telegram-upload-file-")
-                ]
-            )
+            if tasks:
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                for res in results:
+                    if isinstance(res, Exception):
+                        raise res
         if is_big:
             return types.InputFileBig(file_id, part_count, file_name)
         else:
             return custom.InputSizedFile(
                 file_id, part_count, file_name, md5=hash_md5, size=file_size
             )
+
+    async def _send_file_part_task(self, *args, **kwargs):
+        try:
+            await self._send_file_part(*args, **kwargs)
+        finally:
+            self.upload_semaphore.release()
 
     async def _send_file_part(
         self,
@@ -298,18 +304,14 @@ class TelegramUploadClient(TelegramClient):
         try:
             result = await self(request)
         except InvalidBufferError as e:
-            if e.code == 429:
+            if getattr(e, 'code', None) == 429:
                 # Too many connections
                 log.warning("Too many connections to Telegram servers.", exc_info=True)
             else:
-                # 2 gigabytes for regular users
-                return 2 * 1024 * 1024 * 1024
                 raise
         except ConnectionError:
             # Retry to send the file part
             log.debug("Detected connection error. Retrying...", exc_info=True)
-        else:
-            self.upload_semaphore.release()
         if result is None and retry < MAX_RECONNECT_RETRIES:
             # An error occurred, retry
             log.warning(

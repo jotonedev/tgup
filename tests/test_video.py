@@ -1,12 +1,21 @@
+import os
 import zipfile
 import tempfile
 from tgup.video import get_mime_type
 
 
 def test_get_mime_type():
-    with tempfile.TemporaryFile(suffix=".zip") as temp_file:
-        with zipfile.ZipFile(temp_file, "w") as zip_file:
-            zip_file.writestr("test.txt", "This is a test file.")
+    # Setup
+    temp_file = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
+    temp_file.close()
+
+    temp_file_path = temp_file.name
+
+    with zipfile.ZipFile(temp_file_path, "w") as zip_file:
+        zip_file.writestr("test.txt", "This is a test file.")
+    
+    # Check
+    assert get_mime_type(temp_file_path) == "application/x-zip-compressed"
         
-        assert get_mime_type(zipfile.Path(temp_file.name)) == "application/zip"
-        
+    # Teardown
+    os.remove(temp_file_path)
