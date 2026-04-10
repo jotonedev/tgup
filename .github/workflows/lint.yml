@@ -29,6 +29,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           version: "latest"
+          python-version: ${{ matrix.python-version }}
 
       - name: Lint with ruff
         id: lint
