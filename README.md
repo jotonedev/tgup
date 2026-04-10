@@ -13,7 +13,12 @@ it was recreated because the original project seems abandoned.
 
 ## Installation
 
-With pipx (**preferred method**):
+With uv:
+```bash
+uvx tgup
+```
+
+With pipx:
 ```bash
 pipx install tgup
 ```
@@ -34,7 +39,14 @@ To send files:
 ```bash
 tgup dir1/ file1 dir2/abc/
 ```
-It will send the files to your personal chat.
+It will send the files to your personal chat by default.
+
+To send files to a specific channel, chat or user:
+```bash
+tgup --to <channel_username> dir1/ file1
+tgup --to <chat_id> dir1/ file1
+tgup --to <user_username> dir1/ file1
+```
 
 To see all the options, run: `tgup --help`
 

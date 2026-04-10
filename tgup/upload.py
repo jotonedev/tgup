@@ -66,6 +66,7 @@ async def run(
     recursively: bool,
     no_thumbnail: bool,
     thumbnail_file: Path | None,
+    to: str = "me",
 ):
     # Set-up client
     client = TgupClient()
@@ -83,8 +84,17 @@ async def run(
         else:
             thumbnail = None
 
-    # Get the personal chat
-    to_chat = await client.get_input_entity("me")
+    # Get the recipient chat
+    try:
+        entity = int(to)
+    except ValueError:
+        entity = to
+    
+    try:
+        to_chat = await client.get_input_entity(entity)
+    except ValueError:
+        log.error(f"Cannot find entity: {to}")
+        return
 
     # Upload files
     for node in nodes:
@@ -111,6 +121,11 @@ def main():
         action="store_true",
         help="Recursively list files",
         default=False,
+    )
+    parser.add_argument(
+        "--to",
+        help="Recipient (user username, channel username, chat id, ...). By default, files are sent to your personal chat.",
+        default="me",
     )
 
     group = parser.add_mutually_exclusive_group()
@@ -140,7 +155,13 @@ def main():
 
     try:
         asyncio.run(
-            run(args.files, args.recursively, args.no_thumbnail, args.thumbnail_file)
+            run(
+                args.files,
+                args.recursively,
+                args.no_thumbnail,
+                args.thumbnail_file,
+                args.to,
+            )
         )
     except KeyboardInterrupt:
         log.info("Interrupted. Exiting.")
