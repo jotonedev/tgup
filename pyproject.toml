@@ -34,6 +34,13 @@ tgup = "tgup.upload:main"
 
 [tool.ruff]
 exclude = ["__init__.py"]
+line-length = 100
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.format]
+quote-style = "double"
 
 [dependency-groups]
 dev = [
