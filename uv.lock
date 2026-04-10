@@ -233,7 +233,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cryptg", specifier = ">=0.5.0.post0" },
+    { name = "cryptg", specifier = ">=0.5.2" },
     { name = "hachoir", specifier = ">=3.3.0" },
     { name = "python-ffmpeg", specifier = ">=2.0.12" },
     { name = "telethon", specifier = ">=1.39.0" },
