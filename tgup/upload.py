@@ -40,7 +40,15 @@ async def upload_file(
     log.info(f"Uploading {file_path}")
 
     # Create a progress bar
-    pg = DownloadProgressBar(unit="B", unit_scale=True, miniters=1, desc=file_path.name)
+    pg = DownloadProgressBar(
+        unit="B",
+        unit_scale=True,
+        desc=file_path.name,
+        dynamic_ncols=True,
+        smoothing=0.2,
+        mininterval=0.5,
+        miniters=1,
+    )
 
     # Get file size
     file_size = file_path.stat().st_size
