@@ -18,6 +18,7 @@ from typing import Final, Optional
 from telethon import TelegramClient, custom, helpers, hints, utils
 from telethon.crypto import AES
 from telethon.errors import InvalidBufferError
+from telethon.errors.rpcerrorlist import FilePartsInvalidError
 from telethon.tl import TLRequest, functions, types
 
 __all__ = ["TelegramUploadClient"]
@@ -309,6 +310,9 @@ class TelegramUploadClient(TelegramClient):
         except ConnectionError:
             # Retry to send the file part
             log.debug("Detected connection error. Retrying...", exc_info=True)
+        except FilePartsInvalidError:
+            log.error("Invalid number of file parts detected. Upload state may be corrupted.")
+            raise
         if result is None and retry < MAX_RECONNECT_RETRIES:
             # An error occurred, retry
             log.warning(f"Error uploading file part {part_index + 1}/{part_count}. Retrying...")
