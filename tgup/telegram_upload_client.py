@@ -65,13 +65,13 @@ class TelegramUploadClient(TelegramClient):
         self: "TelegramClient",
         file: "hints.FileLike",
         *,
-        part_size_kb: float = None,
-        file_size: int = None,
-        file_name: str = None,
-        use_cache: type = None,
-        key: bytes = None,
-        iv: bytes = None,
-        progress_callback: "hints.ProgressCallback" = None,
+        part_size_kb: float | None = None,
+        file_size: int | None = None,
+        file_name: str | None = None,
+        use_cache: type | None = None,
+        key: bytes | None = None,
+        iv: bytes | None = None,
+        progress_callback: Optional["hints.ProgressCallback"] = None,
     ) -> "types.TypeInputFile":
         """
         Uploads a file to Telegram's servers, without sending it.
@@ -212,16 +212,16 @@ class TelegramUploadClient(TelegramClient):
 
                 if not isinstance(part, bytes):
                     raise TypeError(
-                        "file descriptor returned {}, not bytes (you must "
-                        "open the file in bytes mode)".format(type(part))
+                        f"file descriptor returned {type(part)}, not bytes (you must "
+                        "open the file in bytes mode)"
                     )
 
                 # `file_size` could be wrong in which case `part` may not be
                 # `part_size` before reaching the end.
                 if len(part) != part_size and part_index < part_count - 1:
                     raise ValueError(
-                        "read less than {} before reaching the end; either "
-                        "`file_size` or `read` are wrong".format(part_size)
+                        f"read less than {part_size} before reaching the end; either "
+                        "`file_size` or `read` are wrong"
                     )
 
                 pos += len(part)
@@ -332,7 +332,7 @@ class TelegramUploadClient(TelegramClient):
             if progress_callback:
                 await asyncio.to_thread(progress_callback, pos, file_size)
         else:
-            raise RuntimeError("Failed to upload file part {}.".format(part_index))
+            raise RuntimeError(f"Failed to upload file part {part_index}.")
 
     def decrease_upload_semaphore(self):
         """
@@ -365,7 +365,7 @@ class TelegramUploadClient(TelegramClient):
                 exc_info=e,
                 stack_info=True,
             )
-        except asyncio.TimeoutError as e:
+        except TimeoutError as e:
             log.error("Timeout connecting to Telegram servers.", exc_info=e, stack_info=True)
         finally:
             self.reconnecting_lock.release()

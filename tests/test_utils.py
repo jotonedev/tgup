@@ -111,10 +111,7 @@ def test_setup_logging(log_level):
 
 @pytest.mark.parametrize(
     "mock_cpus,expected_threads",
-    [
-        (1, 1),
-        (16, 16)
-    ],
+    [(1, 1), (16, 16)],
 )
 def test_get_number_threads(mock_cpus, expected_threads):
     with patch("tgup.utils.cpu_count", return_value=mock_cpus):

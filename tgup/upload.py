@@ -11,7 +11,7 @@ from tgup.progress_bar import DownloadProgressBar
 from tgup.utils import list_files, setup_logging
 from tgup.video import extract_thumbnail, is_video_mp4, is_video_type
 
-__all__ = ["upload_file", "run", "main"]
+__all__ = ["main", "run", "upload_file"]
 
 
 log = logging.getLogger(__name__)
@@ -86,8 +86,7 @@ async def run(
         thumbnail = None
     else:
         if isinstance(thumbnail_file, Path):
-            with open(thumbnail_file, "rb") as f:
-                thumbnail = f.read()
+            thumbnail = await asyncio.to_thread(thumbnail_file.read_bytes)
         else:
             thumbnail = None
 

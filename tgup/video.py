@@ -8,7 +8,7 @@ from pathlib import Path
 from ffmpeg import FFmpegError
 from ffmpeg.asyncio import FFmpeg
 
-__all__ = ["is_video_type", "is_video_mp4", "extract_thumbnail"]
+__all__ = ["extract_thumbnail", "is_video_mp4", "is_video_type"]
 
 log = logging.getLogger(__name__)
 
@@ -71,9 +71,8 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
         raise FileNotFoundError(f"Video file {video_path} does not exist.")
 
     # Create tempfile
-    temp_file = tempfile.NamedTemporaryFile(suffix=".jpg", delete_on_close=False)
-    temp_file.close()
-    temp_file_path = Path(temp_file.name)
+    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_file:
+        temp_file_path = Path(temp_file.name)
 
     # Check if the `attached_pic` exists
     ffmpeg = (
@@ -92,7 +91,7 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
     else:
         log.info(f"Extracted thumbnail from {video_path}")
         data = temp_file_path.read_bytes()
-        temp_file_path.unlink()
+        temp_file_path.unlink(missing_ok=True)
         return data
 
     # Create a thumbnail from the first frame of the video
@@ -109,8 +108,9 @@ async def extract_thumbnail(video_path: Path) -> bytes | None:
         log.exception(f"Unable to create thumbnail from {video_path}", exc_info=e, stack_info=True)
         log.debug(f"FFMPEG error: {e.message}")
         log.debug(f"Arguments to execute ffmpeg: {' '.join(e.arguments)}")
+        temp_file_path.unlink(missing_ok=True)
         return None
 
     data = temp_file_path.read_bytes()
-    temp_file_path.unlink()
+    temp_file_path.unlink(missing_ok=True)
     return data

@@ -3,7 +3,7 @@ import re
 from os import cpu_count
 from pathlib import Path
 
-__all__ = ["list_files", "phone_match", "setup_logging", "cpu_count"]
+__all__ = ["cpu_count", "list_files", "phone_match", "setup_logging"]
 
 
 def setup_logging(level: int = logging.INFO):
@@ -67,7 +67,7 @@ def phone_match(value: str):
     """
     match = re.match(r"\+?[0-9.()\[\] \-]+", value)
     if match is None:
-        raise ValueError("{} is not a valid phone".format(value))
+        raise ValueError(f"{value} is not a valid phone")
     return value
 
 
