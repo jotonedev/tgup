@@ -43,7 +43,7 @@ async def upload_file(
     pg = DownloadProgressBar(
         unit="B",
         unit_scale=True,
-        desc=file_path.name,
+        desc=file_path.name[:32],
         dynamic_ncols=True,
         smoothing=0.2,
         mininterval=0.5,
